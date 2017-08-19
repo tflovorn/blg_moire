@@ -25,8 +25,12 @@ fn main() {
     let u = 0.4;
 
     // TODO range over T values
-    let t = arr2(&[[Complex64::new(-1.0, 0.0), Complex64::new(2.0, 0.0)],
-                   [Complex64::new(2.0, 0.0), Complex64::new(-1.0, 0.0)]]);
+    let t = arr2(
+        &[
+            [Complex64::new(-1.0, 0.0), Complex64::new(2.0, 0.0)],
+            [Complex64::new(2.0, 0.0), Complex64::new(-1.0, 0.0)],
+        ],
+    );
 
     let model = BlgMoireModel::new(w, hbar_v, u, t);
 
