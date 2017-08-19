@@ -1,15 +1,31 @@
 [package]
-name = "model_dos"
+name = "blg_moire"
 version = "0.1.0"
 authors = ["Tim Lovorn <tflovorn@austin.utexas.edu>"]
 publish = false
 
 [dependencies]
 tightbinding = { path = "../tightbinding" }
+num-complex = "0.1.40"
+ndarray = "0.9.1"
+serde_json = "1.0"
 
 [dev-dependencies]
 pre-commit = "0.5.2"
 
+[dependencies.linxal]
+version = "0.6.0"
+default-features = false
+features = ["netlib"]
+
 [package.metadata.precommit]
 fmt = "cargo fmt -- --write-mode diff 2>&1"
 test = "cargo test 2>&1"
+
+[[bin]]
+name = "blg_moire_dos"
+path = "src/bin/blg_moire_dos.rs"
+
+[[bin]]
+name = "blg_moire_spectrum"
+path = "src/bin/blg_moire_spectrum.rs"
