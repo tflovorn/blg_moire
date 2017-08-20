@@ -20,10 +20,10 @@ fn main() {
 
     let hk_fn = |k| model.hk_lat(&k);
 
-    let use_curvature_correction = false;
-    let dims = [64, 64, 1];
-    let k_start = [0.0, 0.0, 0.0];
-    let k_stop = [1.0, 1.0, 1.0];
+    let use_curvature_correction = true;
+    let dims = [256, 256, 1];
+    let k_start = [0.30, 0.30, 0.0];
+    let k_stop = [0.36, 0.36, 1.0];
     let num_energies = 1000;
 
     let cache = EvecCache::new(hk_fn, bands, dims, k_start, k_stop);
