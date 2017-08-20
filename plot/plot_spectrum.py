@@ -1,10 +1,13 @@
+import argparse
 import json
 import matplotlib.pyplot as plt
 
 def _main():
-    prefix = "blg_moire"
+    parser = argparse.ArgumentParser("plot specta")
+    parser.add_argument("prefix", type=str, help="Prefix for calculation")
+    args = parser.parse_args()
 
-    bands_path = "{}_spectrum.json".format(prefix)
+    bands_path = "{}_spectrum.json".format(args.prefix)
 
     with open(bands_path, 'r') as fp:
         bands_data = json.load(fp)
