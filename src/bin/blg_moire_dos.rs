@@ -36,14 +36,15 @@ fn main() {
 
     let hk_fn = |k| model.hk_lat(&k);
 
-    let dims = [128, 128, 1];
+    let use_curvature_correction = false;
+    let dims = [64, 64, 1];
     let k_start = [-10.0, -10.0, -10.0];
     let k_stop = [10.0, 10.0, 10.0];
     let num_energies = 1000;
 
     let cache = EvecCache::new(hk_fn, bands, dims, k_start, k_stop);
 
-    let (es, dos) = dos_from_num(&cache, num_energies);
+    let (es, dos) = dos_from_num(&cache, num_energies, use_curvature_correction);
 
     let mut total_dos = vec![0.0; es.len()];
     for band_dos in dos.iter() {
