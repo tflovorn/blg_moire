@@ -4,3 +4,4 @@ Cargo.lock
 *.swp
 *_spectrum.json
 *_dos.json
+*.png
