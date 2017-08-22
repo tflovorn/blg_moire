@@ -33,7 +33,15 @@ fn main() {
     }
 }
 
-fn write_dos(w: f64, hbar_v: f64, u: f64, t_index: usize, t: &Array2<Complex64>, k_max: f64, out_path: &str) {
+fn write_dos(
+    w: f64,
+    hbar_v: f64,
+    u: f64,
+    t_index: usize,
+    t: &Array2<Complex64>,
+    k_max: f64,
+    out_path: &str,
+) {
     let model = BlgMoireModel::new(w, hbar_v, u, t.clone());
 
     let hk_fn = |k| model.hk_lat(&k);
@@ -47,14 +55,7 @@ fn write_dos(w: f64, hbar_v: f64, u: f64, t_index: usize, t: &Array2<Complex64>,
 
     let cache = EvecCache::new(hk_fn, model.bands(), dims, k_start, k_stop);
 
-    let (es, dos) = dos_from_num(&cache, num_energies, use_curvature_correction);
-
-    let mut total_dos = vec![0.0; es.len()];
-    for band_dos in dos.iter() {
-        for (e_index, e_dos) in band_dos.iter().enumerate() {
-            total_dos[e_index] += *e_dos;
-        }
-    }
+    let (es, _, total_dos) = dos_from_num(&cache, num_energies, use_curvature_correction);
 
     // Captions assume that w = 1 and hbar * v = 1.
     // Could rescale ks, emks before outputting to avoid this assert.

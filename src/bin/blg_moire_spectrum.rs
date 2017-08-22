@@ -57,7 +57,15 @@ fn get_ks(num_ks: usize, k_max: f64) -> (Vec<[f64; 3]>, Vec<[f64; 3]>) {
     (kxs, kys)
 }
 
-fn write_spectrum(w: f64, hbar_v: f64, u: f64, t_index: usize, t: &Array2<Complex64>, ks: &Vec<[f64; 3]>, out_prefix: &str) {
+fn write_spectrum(
+    w: f64,
+    hbar_v: f64,
+    u: f64,
+    t_index: usize,
+    t: &Array2<Complex64>,
+    ks: &Vec<[f64; 3]>,
+    out_prefix: &str,
+) {
     let model = BlgMoireModel::new(w, hbar_v, u, t.clone());
 
     let mut ekms = Vec::new();

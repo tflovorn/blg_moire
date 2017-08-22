@@ -28,14 +28,7 @@ fn main() {
 
     let cache = EvecCache::new(hk_fn, bands, dims, k_start, k_stop);
 
-    let (es, dos) = dos_from_num(&cache, num_energies, use_curvature_correction);
-
-    let mut total_dos = vec![0.0; es.len()];
-    for band_dos in dos.iter() {
-        for (e_index, e_dos) in band_dos.iter().enumerate() {
-            total_dos[e_index] += *e_dos;
-        }
-    }
+    let (es, _, total_dos) = dos_from_num(&cache, num_energies, use_curvature_correction);
 
     let json_out = json!({
         "es": es,
