@@ -98,24 +98,3 @@ pub fn pauli_matrices() -> Vec<Array2<Complex64>> {
 
     vec![sigma_x, sigma_y, sigma_z]
 }
-
-#[derive(Clone)]
-pub struct MlgNNModel {
-    t: f64,
-}
-
-impl MlgNNModel {
-    pub fn new(t: f64) -> MlgNNModel {
-        MlgNNModel { t }
-    }
-
-    pub fn hk_lat(&self, k_lat: &[f64; 3]) -> Array2<Complex64> {
-        let mut hk = Array2::zeros((2, 2));
-
-        hk[[0, 1]] = 1.0 + (Complex64::i() * 2.0 * PI * k_lat[1]).exp() +
-            (Complex64::i() * 2.0 * PI * (k_lat[0] + k_lat[1])).exp();
-        hk[[1, 0]] = hk[[0, 1]].conj();
-
-        hk
-    }
-}

@@ -29,11 +29,3 @@ path = "src/bin/blg_moire_dos.rs"
 [[bin]]
 name = "blg_moire_spectrum"
 path = "src/bin/blg_moire_spectrum.rs"
-
-[[bin]]
-name = "mlg_dos"
-path = "src/bin/mlg_dos.rs"
-
-[[bin]]
-name = "mlg_spectrum"
-path = "src/bin/mlg_spectrum.rs"
