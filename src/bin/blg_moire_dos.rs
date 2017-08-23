@@ -51,11 +51,11 @@ fn write_dos(
 
     let k_start = [-k_max, -k_max, 0.0];
     let k_stop = [k_max, k_max, 1.0];
-    let num_energies = 1000;
+    let num_energies = 1001;
 
     let cache = EvecCache::new(hk_fn, model.bands(), dims, k_start, k_stop);
 
-    let (es, _, total_dos) = dos_from_num(&cache, num_energies, use_curvature_correction);
+    let dos = dos_from_num(&cache, num_energies, use_curvature_correction);
 
     // Captions assume that w = 1 and hbar * v = 1.
     // Could rescale ks, emks before outputting to avoid this assert.
@@ -70,8 +70,8 @@ fn write_dos(
     let caption = format!(r"$T_{} \, ; \, U = {}$", t_index + 1, u);
 
     let json_out = json!({
-        "es": es,
-        "total_dos": total_dos,
+        "es": dos.es,
+        "total_dos": dos.total_dos,
         "xlabel": xlabel,
         "ylabel": ylabel,
         "caption": caption,
