@@ -1,4 +1,3 @@
-use std::f64::consts::PI;
 use num_complex::Complex64;
 use ndarray::{Array2, arr2};
 
