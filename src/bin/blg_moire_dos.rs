@@ -5,15 +5,13 @@ extern crate serde_json;
 extern crate tightbinding;
 extern crate blg_moire;
 
-use std::f64::consts::PI;
 use std::fs::File;
 use std::io::Write;
 use num_complex::Complex64;
 use ndarray::Array2;
 use tightbinding::float::is_near_float;
-use tightbinding::tetra::EvecCache;
-use tightbinding::dos::{DosValues, dos_from_num};
 use blg_moire::model::BlgMoireModel;
+use blg_moire::dos::calculate_dos;
 
 fn main() {
     // Setting w = 1, we give all energies in units of w.
@@ -43,25 +41,7 @@ fn write_dos(
     k_max: f64,
     out_path: &str,
 ) {
-    let model = BlgMoireModel::new(w, hbar_v, u, t.clone());
-
-    let hk_fn = |k| model.hk_lat(&k);
-
-    let dims = [256, 256, 1];
-
-    let k_start = [-k_max, -k_max, 0.0];
-    let k_stop = [k_max, k_max, 1.0];
-
-    // Scaling of DOS assumes k_stop[2] - k_start[2] = 1.0.
-    assert!(is_near_float(k_start[2], 0.0, 1e-12, 1e-12));
-    assert!(is_near_float(k_stop[2], 1.0, 1e-12, 1e-12));
-
-    let num_energies = 1001;
-
-    let cache = EvecCache::new(hk_fn, model.bands(), dims, k_start, k_stop);
-
-    let dos = dos_from_num(&cache, num_energies);
-    let dos = rescale_dos(dos, &k_start, &k_stop);
+    let dos = calculate_dos(w, hbar_v, u, t, k_max);
 
     // Scaling given in captions assumes that w = 1 and hbar * v = 1.
     // Could rescale ks, emks, DOS before outputting to avoid this assert.
@@ -86,19 +66,4 @@ fn write_dos(
     file.write_all(format!("{}", json_out).as_bytes()).expect(
         "Error writing output file",
     );
-}
-
-fn rescale_dos(dos: DosValues, k_start: &[f64; 3], k_stop: &[f64; 3]) -> DosValues {
-    let scale_factor = (k_stop[0] - k_start[0]) * (k_stop[1] - k_start[1]) / (2.0 * PI).powi(2);
-    let rescaled_total = dos.total_dos.iter().map(|x| x * scale_factor).collect();
-    let rescaled_orbital = dos.orbital_dos
-        .iter()
-        .map(|orb| orb.iter().map(|x| x * scale_factor).collect())
-        .collect();
-
-    DosValues {
-        es: dos.es.clone(),
-        total_dos: rescaled_total,
-        orbital_dos: rescaled_orbital,
-    }
 }
