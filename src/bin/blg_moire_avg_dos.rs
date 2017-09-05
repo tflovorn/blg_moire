@@ -26,49 +26,56 @@ fn main() {
     let us = [0.1];
     let k_maxs = [10.0];
 
-    // TODO - possible to re-use work from smaller r0's in larger r0's if
-    // xy values sampled at larger r0 are strict superset of those at smaller r0.
-    // Simple way to implement this: specify n_sample only for largest r0,
-    // filter results to get smaller r0's.
-    let n_samples = [4, 8, 12];
-    let r0s = [0.05, 0.10, 0.15];
+    let n_samples_max = 12;
+    let r0_max = 0.15;
+    let r0_filters = [0.05, 0.10];
 
     for (u_index, (u, k_max)) in us.iter().zip(k_maxs.iter()).enumerate() {
-        for (r0_index, (r0, n_sample)) in r0s.iter().zip(n_samples.iter()).enumerate() {
-            let xys = sample_xys(*n_sample, *r0);
+        let xys = sample_xys(n_samples_max, r0_max);
 
-            let mut all_dos = Vec::with_capacity(xys.len());
+        let mut all_dos = Vec::with_capacity(xys.len());
 
-            for (xy_index, &(x, y)) in xys.iter().enumerate() {
-                println!(
-                    "Calculating DOS for (x, y) = ({}, {}); sample {} of {}",
-                    x,
-                    y,
-                    xy_index + 1,
-                    xys.len()
-                );
-                let t = BlgMoireModel::t(x, y);
-                let dos = calculate_dos(w, hbar_v, *u, &t, *k_max);
+        for (xy_index, &(x, y)) in xys.iter().enumerate() {
+            println!(
+                "Calculating DOS for (x, y) = ({}, {}); sample {} of {}",
+                x,
+                y,
+                xy_index + 1,
+                xys.len()
+            );
+            let t = BlgMoireModel::t(x, y);
+            let dos = calculate_dos(w, hbar_v, *u, &t, *k_max);
 
-                let caption = format!(r"$(x, y) = ({:.4}, {:.4}) \, ; \, U / w = {} $", x, y, u);
-                let out_path = format!(
-                    "blg_moire_val_r0_{}_xy_{}_u_{}_dos.json",
-                    r0_index,
-                    xy_index,
-                    u_index
-                );
+            let caption = format!(r"$(x, y) = ({:.4}, {:.4}) \, ; \, U / w = {} $", x, y, u);
+            let out_path = format!("blg_moire_val_xy_{}_u_{}_dos.json", xy_index, u_index);
 
-                write_dos(&dos, &caption, &out_path);
+            write_dos(&dos, &caption, &out_path, None);
 
-                all_dos.push(dos);
-            }
+            all_dos.push(dos);
+        }
 
-            let avg_dos = average_dos(&all_dos);
+        let mut r0s = r0_filters.to_vec();
+        r0s.push(r0_max);
+
+        for (r0_index, r0) in r0s.iter().enumerate() {
+            let eps_abs = 1e-12;
+            let dos_xy_inside_r0: Vec<((f64, f64), DosValues)> = xys.iter()
+                .zip(all_dos.iter())
+                .filter(|&(&(x, y), _)| {
+                    (x.powi(2) + y.powi(2)).sqrt() - r0 <= eps_abs
+                })
+                .map(|(&(x, y), dos)| ((x, y), dos.clone()))
+                .collect();
+
+            let xy_inside_r0 = dos_xy_inside_r0.iter().map(|&((x, y), _)| (x, y)).collect();
+            let dos_inside_r0 = dos_xy_inside_r0.into_iter().map(|(_, dos)| dos).collect();
+
+            let avg_dos = average_dos(&dos_inside_r0);
 
             let caption = format!(r"$r_0 = {} \, ; \, U / w = {} $", r0, u);
             let out_path = format!("blg_moire_avg_r0_{}_u_{}_dos.json", r0_index, u_index);
 
-            write_dos(&avg_dos, &caption, &out_path);
+            write_dos(&avg_dos, &caption, &out_path, Some(xy_inside_r0));
         }
     }
 }
@@ -91,7 +98,7 @@ fn sample_xys(n: usize, r0: f64) -> Vec<(f64, f64)> {
         .collect()
 }
 
-fn write_dos(dos: &DosValues, caption: &str, out_path: &str) {
+fn write_dos(dos: &DosValues, caption: &str, out_path: &str, xys: Option<Vec<(f64, f64)>>) {
     let xlabel = r"$E / w$";
     let ylabel = r"DOS [$(\frac{w}{\hbar v})^2 / w$]";
 
@@ -102,6 +109,7 @@ fn write_dos(dos: &DosValues, caption: &str, out_path: &str) {
         "xlabel": xlabel,
         "ylabel": ylabel,
         "caption": caption,
+        "xys": xys,
     });
 
     let mut file = File::create(out_path).expect("Eror creating output file");
