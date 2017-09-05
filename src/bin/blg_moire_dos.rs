@@ -47,7 +47,6 @@ fn write_dos(
 
     let hk_fn = |k| model.hk_lat(&k);
 
-    let use_curvature_correction = false;
     let dims = [256, 256, 1];
 
     let k_start = [-k_max, -k_max, 0.0];
@@ -61,7 +60,7 @@ fn write_dos(
 
     let cache = EvecCache::new(hk_fn, model.bands(), dims, k_start, k_stop);
 
-    let dos = dos_from_num(&cache, num_energies, use_curvature_correction);
+    let dos = dos_from_num(&cache, num_energies);
     let dos = rescale_dos(dos, &k_stop, &k_start);
 
     // Scaling given in captions assumes that w = 1 and hbar * v = 1.
