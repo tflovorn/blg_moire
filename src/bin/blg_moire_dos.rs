@@ -61,7 +61,7 @@ fn write_dos(
     let cache = EvecCache::new(hk_fn, model.bands(), dims, k_start, k_stop);
 
     let dos = dos_from_num(&cache, num_energies);
-    let dos = rescale_dos(dos, &k_stop, &k_start);
+    let dos = rescale_dos(dos, &k_start, &k_stop);
 
     // Scaling given in captions assumes that w = 1 and hbar * v = 1.
     // Could rescale ks, emks, DOS before outputting to avoid this assert.
