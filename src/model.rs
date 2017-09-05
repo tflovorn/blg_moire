@@ -1,3 +1,4 @@
+use std::f64::consts::PI;
 use num_complex::Complex64;
 use ndarray::{Array2, arr2};
 
@@ -48,6 +49,18 @@ impl BlgMoireModel {
         );
 
         vec![t0, t1, t2]
+    }
+
+    pub fn t(x: f64, y: f64) -> Array2<Complex64> {
+        let e4 = Complex64::new(0.0, 4.0 * PI * y / 3.0).exp();
+        let e2 = Complex64::new(0.0, 2.0 * PI * y / 3.0).exp();
+        let xval = 2.0 * PI * x / 3.0_f64.sqrt();
+
+        let td = e4 - 2.0 * e2 * xval.cos();
+        let tba = e4 + 2.0 * e2 * (xval + PI / 6.0).sin();
+        let tab = e4 + 2.0 * e2 * (xval + PI / 3.0).sin();
+
+        arr2(&[[td, tab], [tba, td]])
     }
 
     pub fn hk_lat(&self, k_lat: &[f64; 3]) -> Array2<Complex64> {

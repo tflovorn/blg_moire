@@ -42,3 +42,36 @@ fn rescale_dos(dos: DosValues, k_start: &[f64; 3], k_stop: &[f64; 3]) -> DosValu
         orbital_dos: rescaled_orbital,
     }
 }
+
+pub fn average_dos(all_dos: &Vec<DosValues>) -> DosValues {
+    assert!(all_dos.len() > 0);
+
+    let num_es = all_dos[0].es.len();
+    let num_orbitals = all_dos[0].orbital_dos.len();
+    let num_dos = all_dos.len() as f64;
+
+    let mut total_dos = vec![0.0; num_es];
+    let mut orbital_dos = Vec::with_capacity(num_orbitals);
+
+    for _ in 0..num_orbitals {
+        orbital_dos.push(vec![0.0; num_es]);
+    }
+
+    for dos in all_dos {
+        for (e_index, dos_value) in dos.total_dos.iter().enumerate() {
+            total_dos[e_index] += dos_value / num_dos;
+        }
+
+        for (orbital_index, orbital_dos_values) in dos.orbital_dos.iter().enumerate() {
+            for (e_index, dos_value) in orbital_dos_values.iter().enumerate() {
+                orbital_dos[orbital_index][e_index] += dos_value / num_dos;
+            }
+        }
+    }
+
+    DosValues {
+        es: all_dos[0].es.clone(),
+        total_dos,
+        orbital_dos,
+    }
+}

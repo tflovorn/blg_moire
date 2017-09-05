@@ -19,8 +19,10 @@ fn main() {
     // Additionally setting hbar * v = 1, we give lengths in units of (hbar * v / w).
     let hbar_v = 1.0;
 
-    let us = [0.4, 0.8, 1.2, 10.0];
-    let k_maxs = [10.0, 10.0, 10.0, 40.0];
+    //let us = [0.1, 0.4, 0.8, 1.2, 10.0];
+    //let k_maxs = [10.0, 10.0, 10.0, 10.0, 40.0];
+    let us = [0.1];
+    let k_maxs = [10.0];
     let ts = BlgMoireModel::ts();
 
     for (t_index, t) in ts.iter().enumerate() {
