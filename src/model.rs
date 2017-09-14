@@ -53,12 +53,12 @@ impl BlgMoireModel {
 
     pub fn t(x: f64, y: f64) -> Array2<Complex64> {
         let e4 = Complex64::new(0.0, 4.0 * PI * y / 3.0).exp();
-        let e2 = Complex64::new(0.0, 2.0 * PI * y / 3.0).exp();
+        let e2 = Complex64::new(0.0, -2.0 * PI * y / 3.0).exp();
         let xval = 2.0 * PI * x / 3.0_f64.sqrt();
 
         let td = e4 - 2.0 * e2 * xval.cos();
         let tba = e4 + 2.0 * e2 * (xval + PI / 6.0).sin();
-        let tab = e4 + 2.0 * e2 * (xval + PI / 3.0).sin();
+        let tab = e4 + 2.0 * e2 * (xval + PI / 3.0).cos();
 
         arr2(&[[td, tab], [tba, td]])
     }
@@ -109,4 +109,26 @@ pub fn pauli_matrices() -> Vec<Array2<Complex64>> {
     );
 
     vec![sigma_x, sigma_y, sigma_z]
+}
+
+#[cfg(test)]
+mod tests {
+    use super::BlgMoireModel;
+    use tightbinding::float::is_near_complex;
+
+    #[test]
+    fn check_t() {
+        let ts_fixed = BlgMoireModel::ts();
+        let ts_calc = vec![
+            BlgMoireModel::t(0.0, 0.0),
+            BlgMoireModel::t(1.0 / (2.0 * 3.0_f64.sqrt()), 0.0),
+            BlgMoireModel::t(1.0 / (4.0 * 3.0_f64.sqrt()), 0.0),
+        ];
+
+        for (t_fixed, t_calc) in ts_fixed.iter().zip(ts_calc.iter()) {
+            for (t_fixed_elem, t_calc_elem) in t_fixed.iter().zip(t_calc.iter()) {
+                assert!(is_near_complex(*t_fixed_elem, *t_calc_elem, 1e-12, 1e-12));
+            }
+        }
+    }
 }
