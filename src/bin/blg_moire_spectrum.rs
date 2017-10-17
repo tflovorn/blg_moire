@@ -21,6 +21,8 @@ fn main() {
     let w = 1.0;
     // Additionally setting hbar * v = 1, we give lengths in units of (hbar * v / w).
     let hbar_v = 1.0;
+    // Rotation angle between layers.
+    let theta = 0.0;
 
     let us = [0.4, 0.8, 1.2, 10.0];
     let k_maxs = [10.0, 10.0, 10.0, 40.0];
@@ -35,8 +37,8 @@ fn main() {
             let out_prefix_kx = format!("blg_moire_kx_t{}_u{}", t_index, u_index);
             let out_prefix_ky = format!("blg_moire_ky_t{}_u{}", t_index, u_index);
 
-            write_spectrum(w, hbar_v, *u, t_index, t, &kxs, &out_prefix_kx);
-            write_spectrum(w, hbar_v, *u, t_index, t, &kys, &out_prefix_ky);
+            write_spectrum(theta, w, hbar_v, *u, t_index, t, &kxs, &out_prefix_kx);
+            write_spectrum(theta, w, hbar_v, *u, t_index, t, &kys, &out_prefix_ky);
         }
     }
 }
@@ -58,6 +60,7 @@ fn get_ks(num_ks: usize, k_max: f64) -> (Vec<[f64; 3]>, Vec<[f64; 3]>) {
 }
 
 fn write_spectrum(
+    theta: f64,
     w: f64,
     hbar_v: f64,
     u: f64,
@@ -66,7 +69,7 @@ fn write_spectrum(
     ks: &Vec<[f64; 3]>,
     out_prefix: &str,
 ) {
-    let model = BlgMoireModel::new(w, hbar_v, u, t.clone());
+    let model = BlgMoireModel::new(theta, w, hbar_v, u, t.clone());
 
     let mut ekms = Vec::new();
 

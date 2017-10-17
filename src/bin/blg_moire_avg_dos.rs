@@ -17,6 +17,8 @@ fn main() {
     let w = 1.0;
     // Additionally setting hbar * v = 1, we give lengths in units of (hbar * v / w).
     let hbar_v = 1.0;
+    // Rotation angle between layers.
+    let theta = 0.0;
 
     // Scaling given in captions assumes that w = 1 and hbar * v = 1.
     // Could rescale ks, emks, DOS before outputting to avoid this assert.
@@ -44,7 +46,8 @@ fn main() {
                 xys.len()
             );
             let t = BlgMoireModel::t(x, y);
-            let dos = calculate_dos(w, hbar_v, *u, &t, *k_max);
+            let energy_bounds = None;
+            let dos = calculate_dos(theta, w, hbar_v, *u, &t, *k_max, energy_bounds);
 
             let caption = format!(r"$(x, y) = ({:.4}, {:.4}) \, ; \, U / w = {} $", x, y, u);
             let out_path = format!("blg_moire_val_xy_{}_u_{}_dos.json", xy_index, u_index);

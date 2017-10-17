@@ -6,8 +6,16 @@ use tightbinding::tetra::EvecCache;
 use tightbinding::dos::{DosValues, dos_from_num};
 use model::BlgMoireModel;
 
-pub fn calculate_dos(w: f64, hbar_v: f64, u: f64, t: &Array2<Complex64>, k_max: f64) -> DosValues {
-    let model = BlgMoireModel::new(w, hbar_v, u, t.clone());
+pub fn calculate_dos(
+    theta: f64,
+    w: f64,
+    hbar_v: f64,
+    u: f64,
+    t: &Array2<Complex64>,
+    k_max: f64,
+    energy_bounds: Option<(f64, f64)>,
+) -> DosValues {
+    let model = BlgMoireModel::new(theta, w, hbar_v, u, t.clone());
 
     let hk_fn = |k| model.hk_lat(&k);
 
@@ -20,7 +28,7 @@ pub fn calculate_dos(w: f64, hbar_v: f64, u: f64, t: &Array2<Complex64>, k_max: 
 
     let cache = EvecCache::new(hk_fn, model.bands(), dims, k_start, k_stop);
 
-    let unscaled_dos = dos_from_num(&cache, num_energies);
+    let unscaled_dos = dos_from_num(&cache, num_energies, energy_bounds);
     rescale_dos(unscaled_dos, &k_start, &k_stop)
 }
 
