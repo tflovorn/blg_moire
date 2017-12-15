@@ -32,5 +32,9 @@ name = "blg_moire_avg_dos"
 path = "src/bin/blg_moire_avg_dos.rs"
 
 [[bin]]
+name = "blg_moire_line_dos"
+path = "src/bin/blg_moire_line_dos.rs"
+
+[[bin]]
 name = "blg_moire_spectrum"
 path = "src/bin/blg_moire_spectrum.rs"
